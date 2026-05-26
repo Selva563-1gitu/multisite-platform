@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --surface-0: #0a0a0f;
+    --surface-1: #111118;
+    --surface-2: #1a1a24;
+    --surface-3: #22222f;
+    --surface-4: #2e2e3e;
+    --accent-cyan: #00d4ff;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --text-primary: #f0f0f5;
+    --text-secondary: #8888a0;
+    --border: rgba(255,255,255,0.07);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    @apply bg-surface-0 text-white;
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--surface-1); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium font-mono;
+  }
+
+  .tag-cyan   { @apply bg-cyan-500/10 text-cyan-400 border border-cyan-500/20; }
+  .tag-purple { @apply bg-purple-500/10 text-purple-400 border border-purple-500/20; }
+  .tag-green  { @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20; }
+  .tag-amber  { @apply bg-amber-500/10 text-amber-400 border border-amber-500/20; }
+  .tag-rose   { @apply bg-rose-500/10 text-rose-400 border border-rose-500/20; }
+
+  .status-dot {
+    @apply inline-block w-1.5 h-1.5 rounded-full mr-1.5;
+  }
+  .status-stable { @apply bg-emerald-400; }
+  .status-beta   { @apply bg-amber-400; }
+  .status-wip    { @apply bg-rose-400; }
+
+  /* App wrapper — each mini app is sandboxed in this */
+  .app-frame {
+    @apply min-h-screen bg-surface-0 p-6;
+    animation: fadeIn 0.3s ease;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 200% auto;
+  animation: shimmer 1.4s linear infinite;
+}

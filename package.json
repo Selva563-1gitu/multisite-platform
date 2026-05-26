@@ -1,0 +1,26 @@
+{
+  "name": "multisite-hosting-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/generate.js && vite",
+    "build": "node scripts/generate.js && vite build",
+    "preview": "vite preview",
+    "generate": "node scripts/generate.js",
+    "deploy": "npm run build && node scripts/deploy.js"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-router-dom": "^6.26.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.4.0",
+    "gh-pages": "^6.1.1"
+  }
+}

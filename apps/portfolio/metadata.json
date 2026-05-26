@@ -1,0 +1,10 @@
+{
+  "name": "Portfolio",
+  "slug": "portfolio",
+  "description": "Developer portfolio showcasing projects, skills, and open-source contributions with a terminal-style interface.",
+  "icon": "🧑‍💻",
+  "tags": ["portfolio"],
+  "color": "green",
+  "order": 3,
+  "status": "stable"
+}

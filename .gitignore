@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+
+# Generated files are committed so Vite can resolve them statically.
+# If you prefer to gitignore them (and always generate in CI), uncomment:
+# generated/
+
+# Local env
+.env.local
+.env.*.local

@@ -1,0 +1,49 @@
+# .github/workflows/ci.yml
+# Runs on every PR — validates that generate.js works and Vite builds clean.
+# Keeps `main` always deployable.
+
+name: CI — Lint & Build Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Run generator
+        run: node scripts/generate.js
+
+      - name: Check generated files exist
+        run: |
+          test -f generated/registry.js   && echo "✓ registry.js"
+          test -f generated/routes.js     && echo "✓ routes.js"
+          test -f generated/navigation.js && echo "✓ navigation.js"
+          test -f generated/manifest.json && echo "✓ manifest.json"
+
+      - name: Vite build (dry run)
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_BASE_PATH: /
+
+      - name: Check dist output
+        run: |
+          test -f dist/index.html && echo "✓ dist/index.html built"
+          echo "Dist size:"
+          du -sh dist/

@@ -1,0 +1,10 @@
+{
+  "name": "Cloud Monitor",
+  "slug": "cloud-monitor",
+  "description": "Infrastructure health dashboard tracking CPU, memory, disk I/O, and service uptime across cloud nodes.",
+  "icon": "☁️",
+  "tags": ["monitoring", "tool"],
+  "color": "purple",
+  "order": 2,
+  "status": "beta"
+}

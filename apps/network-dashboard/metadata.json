@@ -1,0 +1,10 @@
+{
+  "name": "Network Dashboard",
+  "slug": "network-dashboard",
+  "description": "Real-time SDN QoS monitoring with traffic flow visualization and DSCP priority lanes.",
+  "icon": "📡",
+  "tags": ["dashboard", "monitoring"],
+  "color": "cyan",
+  "order": 1,
+  "status": "stable"
+}
