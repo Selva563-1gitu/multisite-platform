@@ -5,7 +5,7 @@ import { resolve } from 'path'
 // GITHUB PAGES: set base to your repo name
 // e.g. if your repo is github.com/yourname/my-platform → base: '/my-platform/'
 // For local dev, base: '/' works fine — CI overrides this via env var
-const base = process.env.VITE_BASE_PATH || '/'
+const base = process.env.VITE_BASE_PATH || '/multisite-platform/'
 
 export default defineConfig({
   plugins: [react()],
