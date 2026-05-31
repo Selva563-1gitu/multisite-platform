@@ -1,4 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
+
+const TERMINAL_LINES = [
+  '# Selva · Information Technology · PTU',
+  '$ whoami',
+  'BTech student · AI & Web Developer · Researcher',
+  '$ ls projects/',
+  'network-dashboard/  clinical-engine/  ai-worker/  devportal/',
+  '$ cat interests.txt',
+  'Reinforcement Learning, NLP, SDN, Full-Stack, DevOps',
+  '$ git log --oneline -3',
+  'a4f19d2 feat: KDIGO-2024 lupus nephritis rules (51 total)',
+  '8b3c1f0 fix: OVS cookie-based flow deletion in DQN agent',
+  '2e9a77f feat: multi-site platform auto-discovery engine',
+]
 
 const PROJECTS = [
   {
@@ -36,18 +50,27 @@ const SKILLS = [
 ]
 
 // Terminal typewriter
-function Terminal({ lines }) {
+function Terminal({ lines = [] }) {
   const [shown, setShown] = useState([])
   const [cursor, setCursor] = useState(true)
 
   useEffect(() => {
+    if (!lines || lines.length === 0) return
     let i = 0
     const interval = setInterval(() => {
-      if (i < lines.length) { setShown(p => [...p, lines[i]]); i++ }
-      else clearInterval(interval)
+      if (i < lines.length) {
+        const line = lines[i]
+        // Guard: only push valid strings, never undefined
+        if (typeof line === 'string') {
+          setShown(p => [...p, line])
+        }
+        i++
+      } else {
+        clearInterval(interval)
+      }
     }, 500)
     return () => clearInterval(interval)
-  }, [])
+  }, []) // empty deps: runs once on mount, cleanup on unmount
 
   useEffect(() => {
     const id = setInterval(() => setCursor(c => !c), 530)
@@ -64,11 +87,14 @@ function Terminal({ lines }) {
         <span className="ml-2 text-xs font-mono" style={{ color: '#555566' }}>selva@devportal ~</span>
       </div>
       <div className="p-5 font-mono text-sm space-y-1 min-h-[160px]">
-        {shown.map((line, i) => (
-          <div key={i} style={{ color: line.startsWith('$') ? '#00d4ff' : line.startsWith('#') ? '#555566' : '#10b981' }}>
-            {line}
-          </div>
-        ))}
+        {shown.map((line, i) => {
+          // Safe check before calling startsWith
+          if (typeof line !== 'string') return null
+          const color = line.startsWith('$') ? '#00d4ff'
+                      : line.startsWith('#') ? '#555566'
+                      : '#10b981'
+          return <div key={i} style={{ color }}>{line}</div>
+        })}
         <div style={{ color: '#00d4ff' }}>
           ${' '}<span style={{ borderRight: cursor ? '2px solid #00d4ff' : '2px solid transparent' }}>&nbsp;</span>
         </div>
@@ -78,20 +104,6 @@ function Terminal({ lines }) {
 }
 
 export default function Portfolio() {
-  const TERMINAL_LINES = [
-    '# Selva · Information Technology · PTU',
-    '$ whoami',
-    'BTech student · AI & Web Developer · Researcher',
-    '$ ls projects/',
-    'network-dashboard/  clinical-engine/  ai-worker/  devportal/',
-    '$ cat interests.txt',
-    'Reinforcement Learning, NLP, SDN, Full-Stack, DevOps',
-    '$ git log --oneline -3',
-    'a4f19d2 feat: KDIGO-2024 lupus nephritis rules (51 total)',
-    '8b3c1f0 fix: OVS cookie-based flow deletion in DQN agent',
-    '2e9a77f feat: multi-site platform auto-discovery engine',
-  ]
-
   return (
     <div style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#f0f0f5', maxWidth: '900px' }}>
       {/* Header */}

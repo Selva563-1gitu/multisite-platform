@@ -1,0 +1,11 @@
+{
+  "name": "Calculator",
+  "slug": "calculator",
+  "description": "A standalone HTML/CSS/JS scientific calculator — no React, no build step, just a plain HTML file.",
+  "icon": "🧮",
+  "tags": ["tool", "demo"],
+  "color": "amber",
+  "order": 4,
+  "status": "stable",
+  "type": "html"
+}

@@ -1,31 +1,66 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-05-26T10:33:33.258Z
+// Generated: 2026-05-31T22:02:40.503Z
 
 import appRegistry from './registry.js'
 
 /**
- * routeConfig: array of { path, slug, name, component }
- * Consumed by src/router.jsx to build <Route> elements.
+ * routeConfig — one entry per discovered app.
+ * Fields:
+ *   type        "react" | "html" | "url"
+ *   component   set for react apps, null otherwise
+ *   htmlPath    set for html apps (iframe src)
+ *   url         set for url apps (iframe src)
  */
 export const routeConfig = [
   {
-    path: '/network-dashboard',
-    slug: 'network-dashboard',
-    name: 'Network Dashboard',
-    component: appRegistry['network-dashboard'],
+    path:      '/todolistapp',
+    slug:      'todolistapp',
+    name:      'ABCD Todo List App',
+    type:      'react',
+    component: appRegistry['todolistapp'],
+    htmlPath:  null,
+    url:       null,
+    iframeOptions: {},
   },
   {
-    path: '/cloud-monitor',
-    slug: 'cloud-monitor',
-    name: 'Cloud Monitor',
-    component: appRegistry['cloud-monitor'],
+    path:      '/calculator',
+    slug:      'calculator',
+    name:      'Calculator',
+    type:      'html',
+    component: null,
+    htmlPath:  '/apps/html-calculator/index.html',
+    url:       null,
+    iframeOptions: {},
   },
   {
-    path: '/portfolio',
-    slug: 'portfolio',
-    name: 'Portfolio',
+    path:      '/greetings',
+    slug:      'greetings',
+    name:      'Greetings',
+    type:      'html',
+    component: null,
+    htmlPath:  '/apps/demo-greetings/index.html',
+    url:       null,
+    iframeOptions: {},
+  },
+  {
+    path:      '/portfolio',
+    slug:      'portfolio',
+    name:      'Portfolio',
+    type:      'react',
     component: appRegistry['portfolio'],
+    htmlPath:  null,
+    url:       null,
+    iframeOptions: {},
+  },
+  {
+    path:      '/ptuwebsite',
+    slug:      'ptuwebsite',
+    name:      'PTU Website',
+    type:      'html',
+    component: null,
+    htmlPath:  '/apps/ptu-website/index.html',
+    url:       null,
+    iframeOptions: {},
   },
 ]
-
 export default routeConfig

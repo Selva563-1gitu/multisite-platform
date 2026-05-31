@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/generate.js && vite",
-    "build": "node scripts/generate.js && vite build",
+    "dev": "rm -rf public && node scripts/generate.js && vite",
+    "build": "rm -rf public && node scripts/generate.js && vite build",
     "preview": "vite preview",
-    "generate": "node scripts/generate.js",
+    "generate": "rm -rf public && node scripts/generate.js",
     "deploy": "npm run build && node scripts/deploy.js"
   },
   "dependencies": {

@@ -1,16 +1,20 @@
 /**
  * scripts/scaffold.js
  * ──────────────────────────────────────────────────────────
- * Quickly scaffold a new app folder with boilerplate files.
+ * Scaffold a new app folder with the right boilerplate.
  *
  * Usage:
- *   node scripts/scaffold.js my-new-app "My New App" "A short description"
+ *   node scripts/scaffold.js <slug> "<Name>" [type] ["description"]
  *
- * Creates:
- *   apps/my-new-app/
- *     ├── metadata.json
- *     └── App.jsx
- * ──────────────────────────────────────────────────────────
+ * Types:
+ *   react  (default) — creates App.jsx + metadata.json
+ *   html              — creates index.html + metadata.json
+ *   url               — creates metadata.json only (needs --url flag)
+ *
+ * Examples:
+ *   node scripts/scaffold.js my-tool "My Tool" react "Does something cool"
+ *   node scripts/scaffold.js my-page "My Page" html  "A plain HTML page"
+ *   node scripts/scaffold.js ext-app "Ext App" url   "External app" --url https://example.com
  */
 
 import fs from 'fs'
@@ -20,28 +24,39 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 
-const [,, slug, name, description = 'A new app.'] = process.argv
+const args = process.argv.slice(2)
+const urlFlagIdx = args.indexOf('--url')
+const externalUrl = urlFlagIdx !== -1 ? args[urlFlagIdx + 1] : null
+const cleanArgs = args.filter((_, i) => i !== urlFlagIdx && i !== urlFlagIdx + 1)
+
+const [slug, name, type = 'react', description = ''] = cleanArgs
 
 if (!slug || !name) {
-  console.error('Usage: node scripts/scaffold.js <slug> "<Name>" "<description>"')
-  console.error('Example: node scripts/scaffold.js my-tool "My Tool" "Does something cool"')
+  console.error('Usage: node scripts/scaffold.js <slug> "<Name>" [react|html|url] ["description"] [--url https://...]')
   process.exit(1)
 }
 
-// Validate slug format
+if (!['react', 'html', 'url'].includes(type)) {
+  console.error(`Unknown type "${type}". Use: react | html | url`)
+  process.exit(1)
+}
+
+if (type === 'url' && !externalUrl) {
+  console.error('Type "url" requires --url <https://...>')
+  process.exit(1)
+}
+
 if (!/^[a-z0-9-]+$/.test(slug)) {
   console.error('Slug must be lowercase letters, numbers, and hyphens only.')
   process.exit(1)
 }
 
 const appDir = path.join(ROOT, 'apps', slug)
-
 if (fs.existsSync(appDir)) {
-  console.error(`App "${slug}" already exists at apps/${slug}/`)
+  console.error(`App "${slug}" already exists.`)
   process.exit(1)
 }
 
-// ── Create directory ─────────────────────────────────────
 fs.mkdirSync(appDir, { recursive: true })
 
 // ── metadata.json ────────────────────────────────────────
@@ -49,50 +64,81 @@ const metadata = {
   name,
   slug,
   description,
-  icon: '📦',
+  icon: type === 'html' ? '📄' : type === 'url' ? '🌐' : '📦',
   tags: ['tool'],
   color: 'cyan',
   order: 99,
   status: 'wip',
+  type,
+  ...(type === 'url' && { url: externalUrl }),
 }
 
-fs.writeFileSync(
-  path.join(appDir, 'metadata.json'),
-  JSON.stringify(metadata, null, 2),
-  'utf-8'
-)
+fs.writeFileSync(path.join(appDir, 'metadata.json'), JSON.stringify(metadata, null, 2))
 
-// ── App.jsx boilerplate ───────────────────────────────────
-const appBoilerplate = `// ${name}
-// Auto-scaffolded by scripts/scaffold.js
-// Edit this file to build your app.
-
+// ── Type-specific files ────────────────────────────────────
+if (type === 'react') {
+  const jsx = `// ${name} — React app
 export default function ${name.replace(/\s+/g, '')}() {
   return (
     <div style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#f0f0f5' }}>
-      <div className="text-xs font-mono mb-2" style={{ color: 'var(--accent-cyan)' }}>
-        ${slug}
-      </div>
       <h2 className="text-2xl font-bold mb-2">${name}</h2>
-      <p style={{ color: '#8888a0' }}>${description}</p>
-      <div className="mt-8 glass rounded-xl p-6" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
-        <p className="text-sm" style={{ color: '#8888a0' }}>
-          👋 Your app content goes here. Edit{' '}
-          <code className="font-mono text-cyan-400">apps/${slug}/App.jsx</code>
-        </p>
-      </div>
+      <p style={{ color: '#8888a0' }}>${description || 'Your app content here.'}</p>
     </div>
   )
 }
 `
+  fs.writeFileSync(path.join(appDir, 'App.jsx'), jsx)
+}
 
-fs.writeFileSync(path.join(appDir, 'App.jsx'), appBoilerplate, 'utf-8')
+if (type === 'html') {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${name}</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0f;
+      color: #f0f0f5;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .card {
+      background: #111118;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 480px;
+      text-align: center;
+    }
+    h1 { font-size: 24px; margin: 0 0 12px; color: #00d4ff; }
+    p  { color: #8888a0; line-height: 1.6; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>${name}</h1>
+    <p>${description || 'Your HTML app content here. No framework needed.'}</p>
+  </div>
+  <script>
+    // Pure JS — no React, no build step
+    console.log('${name} loaded')
+  </script>
+</body>
+</html>
+`
+  fs.writeFileSync(path.join(appDir, 'index.html'), html)
+}
 
-console.log(`\n✅ Scaffolded new app: apps/${slug}/`)
-console.log(`   ├── metadata.json`)
-console.log(`   └── App.jsx`)
-console.log(`\nNext steps:`)
-console.log(`  1. Edit apps/${slug}/App.jsx`)
-console.log(`  2. Update apps/${slug}/metadata.json (icon, tags, status)`)
-console.log(`  3. Run: npm run dev`)
-console.log(`  4. Push to main → auto-deploys\n`)
+// url type: only metadata.json needed
+
+console.log(`\n✅ Scaffolded: apps/${slug}/ (type: ${type})`)
+if (type === 'react') console.log(`   App.jsx + metadata.json`)
+if (type === 'html')  console.log(`   index.html + metadata.json`)
+if (type === 'url')   console.log(`   metadata.json  →  embeds: ${externalUrl}`)
+console.log(`\nNext: npm run dev\n`)

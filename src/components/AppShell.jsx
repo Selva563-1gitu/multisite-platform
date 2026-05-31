@@ -1,23 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-/**
- * AppShell wraps every hosted app with:
- * - A breadcrumb header showing where you are
- * - A back-to-home button
- * - Error boundary for resilience
- * - The .app-frame CSS class for consistent baseline styling
- *
- * Each app's App.jsx renders inside <children />.
- * Apps have full layout freedom inside their frame.
- */
-export default function AppShell({ name, slug, children }) {
+const TYPE_BADGE = {
+  react: { bg: 'rgba(0,212,255,0.1)',    color: '#00d4ff', border: 'rgba(0,212,255,0.2)',    label: 'react' },
+  html:  { bg: 'rgba(16,185,129,0.1)',   color: '#10b981', border: 'rgba(16,185,129,0.2)',   label: 'html'  },
+  url:   { bg: 'rgba(139,92,246,0.1)',   color: '#8b5cf6', border: 'rgba(139,92,246,0.2)',   label: 'url'   },
+}
+
+export default function AppShell({ name, slug, type = 'react', noPadding = false, children }) {
+  const badge = TYPE_BADGE[type] || TYPE_BADGE.react
+
   return (
     <ErrorBoundary slug={slug}>
-      <div className="min-h-screen" style={{ background: 'var(--surface-0)' }}>
-        {/* Top breadcrumb bar */}
+      <div className="min-h-screen flex flex-col" style={{ background: 'var(--surface-0)' }}>
+        {/* Breadcrumb bar */}
         <div
-          className="sticky top-0 z-50 flex items-center gap-3 px-6 py-3 border-b text-sm"
+          className="sticky top-0 z-50 flex items-center gap-3 px-6 py-3 border-b flex-shrink-0"
           style={{
             background: 'rgba(10,10,15,0.85)',
             backdropFilter: 'blur(12px)',
@@ -26,18 +24,26 @@ export default function AppShell({ name, slug, children }) {
         >
           <Link
             to="/"
-            className="flex items-center gap-1.5 transition-colors hover:opacity-80"
+            className="flex items-center gap-1.5 text-sm transition-opacity hover:opacity-70"
             style={{ color: 'var(--text-secondary)' }}
           >
             <HomeIcon />
             <span>Home</span>
           </Link>
           <span style={{ color: 'var(--surface-4)' }}>/</span>
-          <span style={{ color: 'var(--accent-cyan)' }}>{name}</span>
+          <span className="text-sm" style={{ color: 'var(--accent-cyan)' }}>{name}</span>
 
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            {/* Type badge */}
             <span
               className="text-xs font-mono px-2 py-0.5 rounded"
+              style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}` }}
+            >
+              {badge.label}
+            </span>
+            {/* Slug badge */}
+            <span
+              className="text-xs font-mono px-2 py-0.5 rounded hidden sm:inline"
               style={{ background: 'var(--surface-2)', color: 'var(--text-secondary)' }}
             >
               /{slug}
@@ -46,7 +52,7 @@ export default function AppShell({ name, slug, children }) {
         </div>
 
         {/* App content */}
-        <div className="app-frame">
+        <div className={`flex-1 ${noPadding ? '' : 'app-frame'}`}>
           {children}
         </div>
       </div>
@@ -54,22 +60,13 @@ export default function AppShell({ name, slug, children }) {
   )
 }
 
-// ── Error Boundary ──────────────────────────────────────────
-// Catches runtime errors in any app so the shell stays alive.
-
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
     this.state = { hasError: false, error: null }
   }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error, info) {
-    console.error(`[AppShell] Error in app "${this.props.slug}":`, error, info)
-  }
+  static getDerivedStateFromError(error) { return { hasError: true, error } }
+  componentDidCatch(error, info) { console.error(`[AppShell] Error in "${this.props.slug}":`, error, info) }
 
   render() {
     if (this.state.hasError) {

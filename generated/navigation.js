@@ -1,55 +1,97 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-05-26T10:33:33.258Z
-
-/**
- * appManifest: full metadata for all discovered apps.
- * Used by the homepage dashboard and navigation sidebar.
- */
+// Generated: 2026-05-31T22:02:40.503Z
 export const appManifest = [
   {
-    folderName: "network-dashboard",
-    name: "Network Dashboard",
-    slug: "network-dashboard",
-    description: "Real-time SDN QoS monitoring with traffic flow visualization and DSCP priority lanes.",
-    icon: "📡",
-    tags: [
-      "dashboard",
-      "monitoring"
+    "folderName": "abcd-todolist",
+    "type": "react",
+    "name": "ABCD Todo List App",
+    "slug": "todolistapp",
+    "description": "Users can create, delete their todos in this app. Individual users can get their own todos space.",
+    "icon": "🧑‍💻",
+    "tags": [
+      "tool",
+      "productivity"
     ],
-    color: "cyan",
-    order: 1,
-    thumbnail: null,
-    status: "stable"
+    "color": "green",
+    "order": 3,
+    "status": "stable",
+    "htmlPath": null,
+    "url": null,
+    "iframeOptions": {},
+    "lastModified": 1780263462954.9937
   },
   {
-    folderName: "cloud-monitor",
-    name: "Cloud Monitor",
-    slug: "cloud-monitor",
-    description: "Infrastructure health dashboard tracking CPU, memory, disk I/O, and service uptime across cloud nodes.",
-    icon: "☁️",
-    tags: [
-      "monitoring",
-      "tool"
+    "folderName": "html-calculator",
+    "type": "html",
+    "name": "Calculator",
+    "slug": "calculator",
+    "description": "A standalone HTML/CSS/JS scientific calculator — no React, no build step, just a plain HTML file.",
+    "icon": "🧮",
+    "tags": [
+      "tool",
+      "demo"
     ],
-    color: "purple",
-    order: 2,
-    thumbnail: null,
-    status: "beta"
+    "color": "amber",
+    "order": 4,
+    "status": "stable",
+    "htmlPath": "/apps/html-calculator/index.html",
+    "url": null,
+    "iframeOptions": {},
+    "lastModified": 1780237697000
   },
   {
-    folderName: "portfolio",
-    name: "Portfolio",
-    slug: "portfolio",
-    description: "Developer portfolio showcasing projects, skills, and open-source contributions with a terminal-style interface.",
-    icon: "🧑‍💻",
-    tags: [
+    "folderName": "demo-greetings",
+    "type": "html",
+    "name": "Greetings",
+    "slug": "greetings",
+    "description": "A demo site",
+    "icon": "🧑‍💻",
+    "tags": [
+      "demo"
+    ],
+    "color": "rose",
+    "order": 3,
+    "status": "stable",
+    "htmlPath": "/apps/demo-greetings/index.html",
+    "url": null,
+    "iframeOptions": {},
+    "lastModified": 1780263957131.9917
+  },
+  {
+    "folderName": "portfolio",
+    "type": "react",
+    "name": "Portfolio",
+    "slug": "portfolio",
+    "description": "Developer portfolio showcasing projects, skills, and open-source contributions with a terminal-style interface.",
+    "icon": "🧑‍💻",
+    "tags": [
       "portfolio"
     ],
-    color: "green",
-    order: 3,
-    thumbnail: null,
-    status: "stable"
+    "color": "green",
+    "order": 3,
+    "status": "stable",
+    "htmlPath": null,
+    "url": null,
+    "iframeOptions": {},
+    "lastModified": 1779794745000
+  },
+  {
+    "folderName": "ptu-website",
+    "type": "html",
+    "name": "PTU Website",
+    "slug": "ptuwebsite",
+    "description": "First build project, started as a demo landing page of PTU (Puducherry Technological University) ",
+    "icon": "🧑‍💻",
+    "tags": [
+      "demo"
+    ],
+    "color": "rose",
+    "order": 3,
+    "status": "stable",
+    "htmlPath": "/apps/ptu-website/index.html",
+    "url": null,
+    "iframeOptions": {},
+    "lastModified": 1780263700487.9927
   }
 ]
-
 export default appManifest

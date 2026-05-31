@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { appManifest } from '../../generated/navigation.js'
+import { useSortedApps } from '../hooks/useSortedApps.js'
+import SortControl from '../components/SortControl.jsx'
 
 const TAG_BORDER = {
   cyan:   'border-cyan-500/30 hover:border-cyan-500/60',
@@ -23,7 +25,6 @@ const TAG_TEXT = {
   amber:  'text-amber-400',
   rose:   'text-rose-400',
 }
-
 const STATUS_CONFIG = {
   stable: { dot: 'bg-emerald-400', label: 'stable', text: 'text-emerald-400' },
   beta:   { dot: 'bg-amber-400',   label: 'beta',   text: 'text-amber-400'  },
@@ -31,19 +32,22 @@ const STATUS_CONFIG = {
 }
 
 export default function HomePage() {
-  const [search, setSearch] = useState('')
+  const [search, setSearch]       = useState('')
   const [activeTag, setActiveTag] = useState(null)
+  const [visibleCards, setVisibleCards] = useState([])
 
-  // Collect all unique tags from manifest
+  // Sort hook — shared state persisted in localStorage
+  const { sorted, sortMode, setSort } = useSortedApps(appManifest)
+
   const allTags = useMemo(() => {
     const tags = new Set()
     appManifest.forEach(app => app.tags?.forEach(t => tags.add(t)))
     return [...tags].sort()
   }, [])
 
-  // Filter by search + tag
+  // Apply search + tag filter ON TOP of the sorted list
   const filtered = useMemo(() => {
-    return appManifest.filter(app => {
+    return sorted.filter(app => {
       const matchSearch = !search ||
         app.name.toLowerCase().includes(search.toLowerCase()) ||
         app.description.toLowerCase().includes(search.toLowerCase()) ||
@@ -51,10 +55,19 @@ export default function HomePage() {
       const matchTag = !activeTag || app.tags.includes(activeTag)
       return matchSearch && matchTag
     })
-  }, [search, activeTag])
+  }, [sorted, search, activeTag])
+
+  // Stagger cards into view
+  useEffect(() => {
+    setVisibleCards([])
+    const timers = filtered.map((_, i) =>
+      setTimeout(() => setVisibleCards(prev => [...prev, i]), i * 70)
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [filtered])
 
   return (
-    <div className="min-h-screen p-8 animate-fade-in">
+    <div className="min-h-screen p-8">
       {/* Header */}
       <header className="mb-10">
         <div className="flex items-start justify-between flex-wrap gap-4">
@@ -86,10 +99,12 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Search + Filter */}
+      {/* Search + Tag filter + Sort */}
       <div className="flex flex-wrap items-center gap-3 mb-8">
+        {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+            style={{ color: 'var(--text-secondary)' }} />
           <input
             type="text"
             placeholder="Search apps..."
@@ -107,7 +122,7 @@ export default function HomePage() {
         </div>
 
         {/* Tag pills */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 flex-1">
           {allTags.map(tag => (
             <button
               key={tag}
@@ -120,7 +135,25 @@ export default function HomePage() {
             </button>
           ))}
         </div>
+
+        {/* Sort control — full label on homepage */}
+        <SortControl sortMode={sortMode} setSort={setSort} compact={false} />
       </div>
+
+      {/* Result count when filtering */}
+      {(search || activeTag) && (
+        <div className="mb-4 text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
+          {filtered.length} of {appManifest.length} apps
+          {activeTag && <span> · tag: <span style={{ color: 'var(--accent-cyan)' }}>{activeTag}</span></span>}
+          {search    && <span> · search: <span style={{ color: 'var(--accent-cyan)' }}>"{search}"</span></span>}
+          <button
+            onClick={() => { setSearch(''); setActiveTag(null) }}
+            className="ml-3 underline hover:no-underline"
+          >
+            clear
+          </button>
+        </div>
+      )}
 
       {/* App Grid */}
       {filtered.length === 0 ? (
@@ -131,21 +164,22 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((app, i) => (
-            <AppCard key={app.slug} app={app} index={i} />
+            <AppCard key={app.slug} app={app} visible={visibleCards.includes(i)} />
           ))}
         </div>
       )}
 
       {/* Footer */}
-      <footer className="mt-16 pt-6 border-t text-center text-xs font-mono" style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
+      <footer className="mt-16 pt-6 border-t text-center text-xs font-mono"
+        style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
         Auto-generated · <span style={{ color: 'var(--accent-cyan)' }}>node scripts/generate.js</span> · GitHub Pages
       </footer>
     </div>
   )
 }
 
-function AppCard({ app, index }) {
-  const color = app.color || 'cyan'
+function AppCard({ app, visible }) {
+  const color  = app.color  || 'cyan'
   const status = STATUS_CONFIG[app.status] || STATUS_CONFIG.stable
 
   return (
@@ -155,19 +189,33 @@ function AppCard({ app, index }) {
         ${TAG_BORDER[color] || TAG_BORDER.cyan}
         ${TAG_GLOW[color]   || TAG_GLOW.cyan}
       `}
-      style={{ animationDelay: `${index * 50}ms`, animation: 'slideUp 0.4s ease forwards', opacity: 0 }}
+      style={{
+        opacity:   visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.35s ease, transform 0.35s ease',
+      }}
     >
-      {/* Icon + status */}
+      {/* Icon + status + type */}
       <div className="flex items-start justify-between mb-3">
         <div className="text-2xl">{app.icon}</div>
-        <div className="flex items-center gap-1">
-          <span className={`status-dot ${status.dot}`} />
-          <span className={`text-xs font-mono ${status.text}`}>{status.label}</span>
+        <div className="flex items-center gap-2">
+          {app.type !== 'react' && (
+            <span className="text-xs font-mono px-1.5 py-0.5 rounded" style={{
+              background: app.type === 'html' ? 'rgba(16,185,129,0.1)' : 'rgba(139,92,246,0.1)',
+              color:      app.type === 'html' ? '#10b981'              : '#8b5cf6',
+            }}>
+              {app.type}
+            </span>
+          )}
+          <div className="flex items-center gap-1">
+            <span className={`status-dot ${status.dot}`} />
+            <span className={`text-xs font-mono ${status.text}`}>{status.label}</span>
+          </div>
         </div>
       </div>
 
       {/* Name + description */}
-      <h3 className={`font-semibold text-sm mb-1 transition-colors ${TAG_TEXT[color] || 'text-cyan-400'} group-hover:brightness-110`}>
+      <h3 className={`font-semibold text-sm mb-1 ${TAG_TEXT[color] || 'text-cyan-400'} group-hover:brightness-110`}>
         {app.name}
       </h3>
       <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: 'var(--text-secondary)' }}>
@@ -175,20 +223,38 @@ function AppCard({ app, index }) {
       </p>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1 mb-3">
         {app.tags.map(tag => (
           <span key={tag} className={`tag tag-${color}`}>{tag}</span>
         ))}
       </div>
 
+      {/* Last modified */}
+      {app.lastModified > 0 && (
+        <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
+          modified {timeAgo(app.lastModified)}
+        </div>
+      )}
+
       {/* Hover arrow */}
-      <div className="mt-3 flex items-center gap-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+      <div className="mt-2 flex items-center gap-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
         style={{ color: 'var(--text-secondary)' }}>
-        <span>Open app</span>
-        <span>→</span>
+        Open app →
       </div>
     </Link>
   )
+}
+
+function timeAgo(ms) {
+  const diff = Date.now() - ms
+  const mins  = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days  = Math.floor(diff / 86400000)
+  if (mins  < 1)   return 'just now'
+  if (mins  < 60)  return `${mins}m ago`
+  if (hours < 24)  return `${hours}h ago`
+  if (days  < 30)  return `${days}d ago`
+  return new Date(ms).toLocaleDateString()
 }
 
 function SearchIcon({ className, style }) {
