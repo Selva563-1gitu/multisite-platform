@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-05T12:10:28.572Z",
+  "generatedAt": "2026-06-05T12:29:15.139Z",
   "apps": [
     {
       "folderName": "abcd-todolist",
@@ -18,7 +18,7 @@
       "htmlPath": null,
       "url": null,
       "iframeOptions": {},
-      "lastModified": 1780661152778.9949
+      "lastModified": 1780661982574.9917
     },
     {
       "folderName": "html-calculator",
@@ -55,7 +55,7 @@
       "htmlPath": "/apps/demo-greetings/index.html",
       "url": null,
       "iframeOptions": {},
-      "lastModified": 1780661152783.9949
+      "lastModified": 1780661982578.9917
     },
     {
       "folderName": "portfolio",
@@ -91,7 +91,7 @@
       "htmlPath": "/apps/ptu-website/index.html",
       "url": null,
       "iframeOptions": {},
-      "lastModified": 1780661152788.9949
+      "lastModified": 1780661982584.9917
     }
   ]
 }

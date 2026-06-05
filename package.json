@@ -8,7 +8,7 @@
     "build": "rm -rf public && node scripts/generate.js && vite build",
     "preview": "vite preview",
     "generate": "rm -rf public && node scripts/generate.js",
-    "deploy": "npm run build && node scripts/deploy.js"
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "react": "^18.3.0",

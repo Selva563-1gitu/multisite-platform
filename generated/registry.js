@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T12:10:28.571Z
+// Generated: 2026-06-05T12:29:15.139Z
 
 import { lazy } from 'react'
 
