@@ -1362,7 +1362,7 @@ const ABCDTodoApp = () => {
               </h2>
               <button
                 onClick={() => setShowSyncModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-white-500 hover:text-white-700"
               >
                 <X size={24} />
               </button>
@@ -1373,7 +1373,7 @@ const ABCDTodoApp = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Your Backup Code
                 </label>
-                <div className="bg-gray-100 p-3 rounded-lg break-all text-sm font-mono max-h-32 overflow-y-auto">
+                <div className="bg-gray-100 p-3 rounded-lg break-all text-sm font-mono max-h-32 overflow-y-auto text-gray-800">
                   {backupCode || "Generating..."}
                 </div>
                 <button
@@ -1381,7 +1381,7 @@ const ABCDTodoApp = () => {
                     navigator.clipboard.writeText(backupCode);
                     alert("Copied to clipboard!");
                   }}
-                  className="mt-2 text-sm text-indigo-600 hover:text-indigo-700"
+                  className="mt-2 text-sm text-white-600 hover:text-white-700"
                 >
                   Copy to clipboard
                 </button>

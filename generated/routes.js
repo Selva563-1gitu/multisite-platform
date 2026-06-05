@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T20:02:34.816Z
+// Generated: 2026-06-05T21:26:34.834Z
 
 import appRegistry from './registry.js'
 

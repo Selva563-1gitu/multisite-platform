@@ -32,6 +32,9 @@ input[type="text"] {
   border-radius: 6px;
   font-size: 14px;
 }
+input, select{
+  color: black;
+}
 
 button {
   padding: 10px 20px;

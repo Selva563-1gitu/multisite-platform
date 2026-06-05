@@ -4,23 +4,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "rm -rf public && node scripts/generate.js && vite",
-    "build": "rm -rf public && node scripts/generate.js && vite build",
+    "dev": "node scripts/generate.js && vite",
+    "build": "node scripts/generate.js && vite build",
     "preview": "vite preview",
-    "generate": "rm -rf public && node scripts/generate.js",
-    "deploy": "npm run build && gh-pages -d dist"
+    "generate": "node scripts/generate.js",
+    "deploy": "npm run build && node scripts/deploy.js"
   },
   "dependencies": {
+    "firebase": "^12.13.0",
+    "framer-motion": "^12.40.0",
+    "gapi-script": "^1.2.0",
+    "html2canvas": "^1.4.1",
+    "lucide-react": "^1.16.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.19",
+    "gh-pages": "^6.1.1",
     "postcss": "^8.4.40",
     "tailwindcss": "^3.4.7",
-    "vite": "^5.4.0",
-    "gh-pages": "^6.1.1"
+    "vite": "^5.4.0"
   }
 }
