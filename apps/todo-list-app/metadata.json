@@ -1,0 +1,10 @@
+{
+  "name": "ABCD-TodoList-App",
+  "slug": "todo-list-app",
+  "description": "A simple and intuitive todo list application built with React, allowing users to manage their tasks efficiently.",
+  "icon": "🧑‍💻",
+  "tags": ["tool", "productivity", "task management"],
+  "color": "green",
+  "order": 3,
+  "status": "stable"
+}

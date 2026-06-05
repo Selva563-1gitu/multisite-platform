@@ -1,0 +1,10 @@
+{
+  "name": "PTU Website",
+  "slug": "ptu-website",
+  "description": "A demo landing page of my college (Puducherry Technological University) to work hands on tech like html,css,js.",
+  "icon": "🧮",
+  "tags": ["demo"],
+  "order": 4,
+  "status": "stable",
+  "type": "html"
+}

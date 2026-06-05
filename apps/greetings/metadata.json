@@ -1,0 +1,11 @@
+{
+  "name": "A Demo - Greetings",
+  "slug": "greetings",
+  "description": "A sample html page for testing UX features, Used for demo purpose",
+  "icon": "🧮",
+  "tags": ["demo"],
+  "color": "amber",
+  "order": 4,
+  "status": "stable",
+  "type": "html"
+}

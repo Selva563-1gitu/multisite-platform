@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T19:33:40.176Z
+// Generated: 2026-06-05T20:02:34.816Z
 
 import appRegistry from './registry.js'
 
@@ -13,11 +13,21 @@ import appRegistry from './registry.js'
  */
 export const routeConfig = [
   {
-    path:      '/todolistapp',
-    slug:      'todolistapp',
-    name:      'ABCD Todo List App',
+    path:      '/greetings',
+    slug:      'greetings',
+    name:      'A Demo - Greetings',
+    type:      'html',
+    component: null,
+    htmlPath:  '/apps/greetings/index.html',
+    url:       null,
+    iframeOptions: {},
+  },
+  {
+    path:      '/todo-list-app',
+    slug:      'todo-list-app',
+    name:      'ABCD-TodoList-App',
     type:      'react',
-    component: appRegistry['todolistapp'],
+    component: appRegistry['todo-list-app'],
     htmlPath:  null,
     url:       null,
     iframeOptions: {},
@@ -33,16 +43,6 @@ export const routeConfig = [
     iframeOptions: {},
   },
   {
-    path:      '/greetings',
-    slug:      'greetings',
-    name:      'Greetings',
-    type:      'html',
-    component: null,
-    htmlPath:  '/apps/demo-greetings/index.html',
-    url:       null,
-    iframeOptions: {},
-  },
-  {
     path:      '/portfolio',
     slug:      'portfolio',
     name:      'Portfolio',
@@ -53,8 +53,8 @@ export const routeConfig = [
     iframeOptions: {},
   },
   {
-    path:      '/ptuwebsite',
-    slug:      'ptuwebsite',
+    path:      '/ptu-website',
+    slug:      'ptu-website',
     name:      'PTU Website',
     type:      'html',
     component: null,

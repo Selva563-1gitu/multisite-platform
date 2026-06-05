@@ -1,16 +1,35 @@
 {
-  "generatedAt": "2026-06-05T19:33:40.176Z",
+  "generatedAt": "2026-06-05T20:02:34.816Z",
   "apps": [
     {
-      "folderName": "abcd-todolist",
+      "folderName": "greetings",
+      "type": "html",
+      "name": "A Demo - Greetings",
+      "slug": "greetings",
+      "description": "A sample html page for testing UX features, Used for demo purpose",
+      "icon": "🧮",
+      "tags": [
+        "demo"
+      ],
+      "color": "amber",
+      "order": 4,
+      "status": "stable",
+      "htmlPath": "/apps/greetings/index.html",
+      "url": null,
+      "iframeOptions": {},
+      "lastModified": 1780689643368.992
+    },
+    {
+      "folderName": "todo-list-app",
       "type": "react",
-      "name": "ABCD Todo List App",
-      "slug": "todolistapp",
-      "description": "Users can create, delete their todos in this app. Individual users can get their own todos space.",
+      "name": "ABCD-TodoList-App",
+      "slug": "todo-list-app",
+      "description": "A simple and intuitive todo list application built with React, allowing users to manage their tasks efficiently.",
       "icon": "🧑‍💻",
       "tags": [
         "tool",
-        "productivity"
+        "productivity",
+        "task management"
       ],
       "color": "green",
       "order": 3,
@@ -18,7 +37,7 @@
       "htmlPath": null,
       "url": null,
       "iframeOptions": {},
-      "lastModified": 1780263462954.9937
+      "lastModified": 1780689501251.9927
     },
     {
       "folderName": "html-calculator",
@@ -38,24 +57,6 @@
       "url": null,
       "iframeOptions": {},
       "lastModified": 1780237697000
-    },
-    {
-      "folderName": "demo-greetings",
-      "type": "html",
-      "name": "Greetings",
-      "slug": "greetings",
-      "description": "A demo site",
-      "icon": "🧑‍💻",
-      "tags": [
-        "demo"
-      ],
-      "color": "rose",
-      "order": 3,
-      "status": "stable",
-      "htmlPath": "/apps/demo-greetings/index.html",
-      "url": null,
-      "iframeOptions": {},
-      "lastModified": 1780263957131.9917
     },
     {
       "folderName": "portfolio",
@@ -79,19 +80,19 @@
       "folderName": "ptu-website",
       "type": "html",
       "name": "PTU Website",
-      "slug": "ptuwebsite",
-      "description": "First build project, started as a demo landing page of PTU (Puducherry Technological University) ",
-      "icon": "🧑‍💻",
+      "slug": "ptu-website",
+      "description": "A demo landing page of my college (Puducherry Technological University) to work hands on tech like html,css,js.",
+      "icon": "🧮",
       "tags": [
         "demo"
       ],
       "color": "rose",
-      "order": 3,
+      "order": 4,
       "status": "stable",
       "htmlPath": "/apps/ptu-website/index.html",
       "url": null,
       "iframeOptions": {},
-      "lastModified": 1780263700487.9927
+      "lastModified": 1780689060111.9944
     }
   ]
 }
