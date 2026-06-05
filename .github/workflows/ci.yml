@@ -1,14 +1,14 @@
 # .github/workflows/ci.yml
 # Runs on every PR — validates that generate.js works and Vite builds clean.
-# Keeps `main` always deployable.
+# Keeps `master` always deployable.
 
 name: CI — Lint & Build Check
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   validate:
