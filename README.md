@@ -1,6 +1,8 @@
 # DevPortal — Multi-Site CI/CD Hosting Platform
 
-A production-grade monorepo platform that auto-discovers React apps, generates routes/navigation, and deploys to GitHub Pages via GitHub Actions. **Adding a new app = creating a folder + pushing.**
+A production-grade monorepo platform that auto-discovers React apps, plain HTML files, and external URLs — generates routes/navigation, and deploys to GitHub Pages via GitHub Actions.
+
+**Live:** https://selva563-1gitu.github.io/multisite-platform/#/
 
 ---
 
@@ -8,47 +10,74 @@ A production-grade monorepo platform that auto-discovers React apps, generates r
 
 ```
 repo/
-├── apps/                     ← Drop new apps here
-│   ├── network-dashboard/
-│   │   ├── App.jsx           ← Required: root component
-│   │   └── metadata.json     ← Required: name, slug, description
-│   ├── cloud-monitor/
-│   └── portfolio/
+├── apps/                         ← Drop new apps here
+│   ├── network-dashboard/        ← type: react
+│   │   ├── App.jsx               ← Required for react type
+│   │   └── metadata.json
+│   ├── cloud-monitor/            ← type: react (beta)
+│   │   ├── App.jsx
+│   │   └── metadata.json
+│   ├── portfolio/                ← type: react
+│   │   ├── App.jsx
+│   │   └── metadata.json
+│   ├── html-calculator/          ← type: html
+│   │   ├── index.html            ← Required for html type (plain HTML/CSS/JS)
+│   │   └── metadata.json
+│   └── wikipedia/                ← type: url
+│       └── metadata.json         ← Only needs { "url": "https://..." }
 │
 ├── scripts/
-│   ├── generate.js           ← AUTO-DISCOVERY ENGINE (run before every build)
-│   └── scaffold.js           ← CLI scaffolder for new apps
+│   ├── generate.js               ← AUTO-DISCOVERY ENGINE (runs before every build)
+│   └── scaffold.js               ← CLI to scaffold new apps quickly
 │
 ├── src/
-│   ├── App.jsx               ← Root with auto-generated routes
-│   ├── main.jsx              ← React + HashRouter entry
-│   ├── index.css             ← Global Tailwind + design tokens
+│   ├── App.jsx                   ← Root router — dispatches by app type
+│   ├── main.jsx                  ← React + HashRouter entry point
+│   ├── index.css                 ← Global Tailwind + CSS design tokens
 │   ├── components/
-│   │   ├── Sidebar.jsx       ← Auto-populated nav from generated/navigation.js
-│   │   ├── AppShell.jsx      ← Breadcrumb wrapper + Error Boundary per app
-│   │   └── LoadingScreen.jsx ← Shown during React.lazy() chunk load
+│   │   ├── Sidebar.jsx           ← Auto-populated nav with sort control
+│   │   ├── AppShell.jsx          ← Breadcrumb + type badge + Error Boundary
+│   │   ├── IframeShell.jsx       ← Iframe renderer for html/url types
+│   │   ├── SortControl.jsx       ← Reusable sort dropdown (used in sidebar + homepage)
+│   │   └── LoadingScreen.jsx     ← Shown during React.lazy() chunk load
+│   ├── hooks/
+│   │   └── useSortedApps.js      ← Sort logic + localStorage persistence
 │   └── pages/
-│       ├── HomePage.jsx      ← Dashboard grid with search/filter
-│       └── NotFound.jsx      ← 404 fallback
+│       ├── HomePage.jsx          ← Dashboard grid with search, filter, sort
+│       └── NotFound.jsx          ← 404 fallback
 │
-├── generated/                ← AUTO-GENERATED (don't edit manually)
-│   ├── registry.js           ← slug → React.lazy(import) map
-│   ├── routes.js             ← React Router route definitions
-│   ├── navigation.js         ← Full app metadata for sidebar + home
-│   └── manifest.json         ← Machine-readable manifest (CI/tooling)
+├── generated/                    ← AUTO-GENERATED — never edit manually
+│   ├── registry.js               ← slug → React.lazy() map (react apps only)
+│   ├── routes.js                 ← Full route config for all types
+│   ├── navigation.js             ← Sidebar + homepage metadata
+│   └── manifest.json             ← Machine-readable build summary
 │
 ├── public/
-│   └── favicon.svg
+│   └── apps/                     ← HTML apps auto-copied here by generate.js
+│       └── html-calculator/
+│           └── index.html
 │
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml        ← Push to main → build → deploy to gh-pages
-│       └── ci.yml            ← PR validation: generate + build check
+│       ├── deploy.yml            ← Push to main → build → deploy to gh-pages
+│       └── ci.yml                ← PR validation: generate + build check
 │
-├── vite.config.js            ← Code-splitting, path aliases, base path
+├── vite.config.js                ← base: '/multisite-platform/' (hardcoded)
 ├── tailwind.config.js
 └── package.json
 ```
+
+---
+
+## App Types
+
+The platform supports 3 app types declared in `metadata.json`:
+
+| type    | Needs            | How it renders                          |
+|---------|------------------|-----------------------------------------|
+| `react` | `App.jsx`        | `React.lazy()` → own JS chunk           |
+| `html`  | `index.html`     | Static file served via `<iframe>`       |
+| `url`   | `"url"` in meta  | External URL embedded in `<iframe>`     |
 
 ---
 
@@ -64,215 +93,185 @@ GitHub Actions: deploy.yml
     │
     ├── node scripts/generate.js
     │       │
-    │       ├── fs.readdirSync('apps/')
-    │       │       ↓ finds: network-dashboard/, cloud-monitor/, portfolio/
-    │       │
-    │       ├── Reads each apps/<name>/metadata.json
-    │       │
+    │       ├── Scans /apps/ — reads metadata.json from each folder
+    │       ├── Validates per type (react→App.jsx, html→index.html, url→url field)
+    │       ├── Copies HTML apps → /public/apps/<name>/ (Vite serves these as static)
     │       └── Writes:
-    │               generated/registry.js    → { slug: React.lazy(() => import()) }
-    │               generated/routes.js      → [{ path, slug, name, component }]
-    │               generated/navigation.js  → full metadata array
+    │               generated/registry.js    → React.lazy() map
+    │               generated/routes.js      → route config with type info
+    │               generated/navigation.js  → full metadata + lastModified
     │               generated/manifest.json  → JSON summary
     │
     ├── vite build
-    │       │
-    │       └── Each app → separate JS chunk (code-splitting)
+    │       └── Per-app JS chunks (react apps only):
     │               dist/assets/app-network-dashboard-[hash].js
     │               dist/assets/app-cloud-monitor-[hash].js
     │               dist/assets/app-portfolio-[hash].js
-    │               dist/assets/vendor-[hash].js   (React + Router)
-    │               dist/assets/index-[hash].js    (shell)
+    │               dist/assets/vendor-[hash].js
+    │               dist/assets/index-[hash].js
+    │               dist/apps/html-calculator/index.html  ← static copy
     │
-    └── Deploy dist/ → gh-pages branch → GitHub Pages live
+    └── Deploy dist/ → gh-pages branch → live
 ```
 
 ---
 
 ## Adding a New App
 
-### Option A — Scaffold script (fastest)
+### Scaffold (fastest)
 
 ```bash
-node scripts/scaffold.js my-tool "My Tool" "Does something useful"
-# Creates: apps/my-tool/App.jsx + apps/my-tool/metadata.json
+# React app
+node scripts/scaffold.js my-tool "My Tool" react "Description"
+
+# Plain HTML app
+node scripts/scaffold.js my-page "My Page" html "Description"
+
+# External URL embed
+node scripts/scaffold.js ext-app "Ext App" url "Description" --url https://example.com
 ```
 
-### Option B — Manual
+### Manual
 
-1. Create folder: `apps/my-tool/`
+1. Create `apps/<slug>/`
+2. Add `metadata.json`:
 
-2. Add `apps/my-tool/metadata.json`:
 ```json
 {
-  "name": "My Tool",
-  "slug": "my-tool",
-  "description": "A brief description shown on the homepage.",
+  "name": "My App",
+  "slug": "my-app",
+  "description": "What this app does.",
   "icon": "🛠️",
   "tags": ["tool"],
-  "color": "amber",
+  "color": "cyan",
   "order": 10,
-  "status": "stable"
+  "status": "stable",
+  "type": "react"
 }
 ```
 
-3. Add `apps/my-tool/App.jsx`:
-```jsx
-export default function MyTool() {
-  return <div>Hello from My Tool!</div>
-}
-```
-
-4. Push:
-```bash
-git add apps/my-tool/
-git commit -m "feat: add my-tool app"
-git push
-```
-
-GitHub Actions handles the rest. **No routing file touched. No import added. No config edited.**
+3. Add the required file for the type (`App.jsx` / `index.html`)
+4. Push — GitHub Actions handles everything else.
 
 ---
 
 ## metadata.json Reference
 
-| Field         | Type     | Required | Description                                     |
-|---------------|----------|----------|-------------------------------------------------|
-| `name`        | string   | ✅       | Display name shown in sidebar + cards           |
-| `slug`        | string   | ✅       | URL path: `/my-tool`. Lowercase, hyphens only   |
-| `description` | string   | —        | Shown on homepage card                          |
-| `icon`        | string   | —        | Emoji shown in sidebar and card                 |
-| `tags`        | string[] | —        | Used for filter pills on homepage               |
-| `color`       | string   | —        | `cyan` \| `purple` \| `green` \| `amber` \| `rose` |
-| `order`       | number   | —        | Sort order in sidebar (lower = first)           |
-| `status`      | string   | —        | `stable` \| `beta` \| `wip`                    |
+| Field           | Type     | Required | Description                                          |
+|-----------------|----------|----------|------------------------------------------------------|
+| `name`          | string   | ✅       | Display name in sidebar and cards                    |
+| `slug`          | string   | ✅       | URL path: `/my-app`. Lowercase + hyphens only        |
+| `type`          | string   | ✅       | `react` \| `html` \| `url`                          |
+| `description`   | string   | —        | Shown on homepage card                               |
+| `icon`          | string   | —        | Emoji for sidebar and card                           |
+| `tags`          | string[] | —        | Used for filter pills on homepage                    |
+| `color`         | string   | —        | `cyan` \| `purple` \| `green` \| `amber` \| `rose`  |
+| `order`         | number   | —        | Used when sort mode is "Manual Order"                |
+| `status`        | string   | —        | `stable` \| `beta` \| `wip`                         |
+| `url`           | string   | url only | External URL to embed                                |
+
+---
+
+## Sorting
+
+Apps can be sorted 4 ways — controlled via dropdown in **both the sidebar and homepage**. Choice persists in `localStorage` across refreshes.
+
+| Mode           | Behaviour                                          |
+|----------------|----------------------------------------------------|
+| A → Z          | Alphabetical ascending (default)                   |
+| Z → A          | Alphabetical descending                            |
+| Last Modified  | Most recently changed file in the app folder first |
+| Manual Order   | `order` field in metadata.json                     |
 
 ---
 
 ## GitHub Pages Setup
 
-### 1. Create repository on GitHub
+### 1. Create and push repo
 
 ```bash
 git init
-git remote add origin https://github.com/<you>/<repo-name>.git
+git remote add origin https://github.com/selva563-1gitu/multisite-platform.git
+git add .
+git commit -m "init"
 git push -u origin main
 ```
 
-### 2. Add base path secret
-
-Go to **Settings → Secrets and variables → Actions → New repository secret**:
-- Name: `VITE_BASE_PATH`
-- Value: `/<repo-name>/`  (e.g. `/devportal/`)
-
-### 3. Enable GitHub Pages
+### 2. Enable GitHub Pages
 
 Go to **Settings → Pages**:
 - Source: **Deploy from a branch**
 - Branch: **gh-pages**
 - Folder: **/ (root)**
 
-### 4. Push to main
+### 3. Push to main
 
-GitHub Actions runs automatically. Your site will be live at:
+GitHub Actions deploys automatically. Live at:
 ```
-https://<username>.github.io/<repo-name>/#/
+https://selva563-1gitu.github.io/multisite-platform/#/
+```
+
+> ⚠️ If you fork or rename the repo, update `base` in `vite.config.js`:
+> ```js
+> const base = '/your-new-repo-name/'
+> ```
+
+---
+
+## Base Path — The Most Common Deployment Issue
+
+**Symptom:** Blank page, `NS_ERROR_CORRUPTED_CONTENT`, assets 404ing, MIME type errors.
+
+**Cause:** Vite's `base` doesn't match your GitHub Pages URL path.
+
+**Fix:** In `vite.config.js`, `base` must exactly match your repo name with leading and trailing slashes:
+
+```js
+// ✅ Correct — repo is github.com/selva563-1gitu/multisite-platform
+const base = '/multisite-platform/'
+
+// ❌ Wrong — missing slashes, wrong name, or using env var that isn't set
+const base = 'multisite-platform'
+const base = '/wrong-name/'
+const base = process.env.VITE_BASE_PATH || '/'  // fails if secret not set
 ```
 
 ---
 
-## HashRouter vs BrowserRouter for GitHub Pages
+## HashRouter vs BrowserRouter
+
+This project uses **HashRouter** — correct for GitHub Pages.
 
 | | HashRouter | BrowserRouter |
 |---|---|---|
 | URL format | `/#/cloud-monitor` | `/cloud-monitor` |
-| Refresh works? | ✅ Always | ❌ 404 unless server configured |
-| GitHub Pages compatible | ✅ Zero config | ⚠️ Needs 404.html hack |
-| SEO | ❌ Hash not crawled | ✅ Clean URLs |
-| Best for | Static hosts | Custom servers / Netlify / Vercel |
-
-**This project uses HashRouter** — correct choice for GitHub Pages. BrowserRouter would require a [404.html redirect trick](https://github.com/rafgraph/spa-github-pages) and is fragile.
+| Hard refresh | ✅ Always works | ❌ 404 unless server configured |
+| GitHub Pages | ✅ Zero config | ⚠️ Needs 404.html hack |
 
 ---
 
 ## Local Development
 
 ```bash
-# Install deps
 npm install
-
-# Generate routes (also runs automatically in dev/build)
-npm run generate
-
-# Start dev server with HMR
 npm run dev
-
-# Production build
-npm run build
-
-# Preview production build locally
-npm run preview
+# Open: http://localhost:5173/multisite-platform/
 ```
+
+> Note: With `base: '/multisite-platform/'`, local dev URL has the sub-path too.
+> Everything works normally — Vite handles it.
 
 ---
 
-## Code-Splitting Explained
+## Common Issues
 
-Each app becomes a **separate JS chunk** in the Vite build output:
-
-```
-dist/assets/vendor-[hash].js              ← React, ReactDOM, React Router (shared)
-dist/assets/index-[hash].js              ← Shell: sidebar, homepage, routing
-dist/assets/app-network-dashboard.js    ← Loaded only when user visits /network-dashboard
-dist/assets/app-cloud-monitor.js        ← Loaded only when user visits /cloud-monitor
-dist/assets/app-portfolio.js            ← Loaded only when user visits /portfolio
-```
-
-The mechanism:
-```js
-// generated/registry.js (auto-generated)
-export const appRegistry = {
-  'network-dashboard': lazy(() => import('../apps/network-dashboard/App.jsx')),
-}
-```
-
-`React.lazy()` + `import()` = dynamic import. Vite sees this at build time and creates a separate chunk. At runtime, the browser only downloads an app's JS when the user navigates to it.
-
----
-
-## Scalability Notes
-
-- **100+ apps**: The generator script handles any number. Build time scales linearly; runtime cost per navigation stays constant (lazy loading).
-- **Per-app dependencies**: Apps can use their own npm packages — they're just isolated React components. Import from `node_modules` freely; Vite deduplicates shared deps into the vendor chunk.
-- **Independent deployments**: For fully independent CI per app, the architecture evolves toward a workspace monorepo (Turborepo/Nx) with per-app deploy workflows. This repo is stage 1.
-- **Shared component library**: Create `src/lib/` with shared UI components. Any app can import them: `import { Button } from '../../src/lib/Button'`.
-
----
-
-## Common Issues & Fixes
-
-### "Cannot find module '../generated/routes.js'"
-**Fix:** Run `node scripts/generate.js` before `vite`. The `npm run dev` and `npm run build` scripts do this automatically.
-
-### App shows blank on GitHub Pages
-**Check:** Is `VITE_BASE_PATH` set as a repo secret? Verify it matches your repo name exactly, including leading/trailing slashes: `/my-repo/`.
-
-### Routes return 404 on hard refresh
-**This is normal with BrowserRouter + GitHub Pages.** This project uses HashRouter, which doesn't have this issue.
-
-### New app not appearing after push
-**Check:** Does the app folder have both `App.jsx` and `metadata.json`? Does `metadata.json` have both `name` and `slug`? The generator logs warnings for skipped apps.
-
-### Vite build fails with "lazy is not a function"
-**Fix:** Ensure `generated/registry.js` uses `import { lazy } from 'react'` (it does by default). If you see this in CI, the generator ran before React was installed — ensure `npm ci` runs first.
-
----
-
-## Future Enhancements
-
-- **MDX support**: Add `remark` + `rehype` pipeline so apps can render Markdown content.
-- **Per-app build status badge**: Read `generated/manifest.json` in the UI and show last deploy timestamp.
-- **App thumbnails**: Add `thumbnail` field to metadata.json pointing to a PNG in `apps/<name>/preview.png`.
-- **Plugin hooks**: Let apps export a `config.js` alongside App.jsx that extends Vite config (custom plugins, env vars).
-- **Turborepo**: Migrate to `pnpm workspaces` + Turborepo for per-app caching and parallelized CI.
-- **Storybook integration**: Each app registers its own stories, discoverable from the shell.
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Blank page / assets 404 | Wrong `base` in vite.config.js | Set `base` to `/your-repo-name/` |
+| `NS_ERROR_CORRUPTED_CONTENT` | Asset paths wrong, GitHub serves 404 HTML as JS | Same — fix `base` |
+| MIME type error on JS | GitHub Pages returning HTML (404) instead of JS | Same — fix `base` |
+| App cards not showing | CSS animation conflict (fixed) | Already patched |
+| Portfolio crashes after ~5s | Terminal interval setState bug (fixed) | Already patched |
+| New app not appearing | Missing `App.jsx` or `metadata.json` | Check generator warnings |
+| HTML app not loading | Not copied to `public/apps/` | Re-run `node scripts/generate.js` |
+| URL app shows error | Site blocks iframes (`X-Frame-Options`) | Use "Open in new tab" button |

@@ -1,14 +1,14 @@
 # .github/workflows/ci.yml
 # Runs on every PR — validates that generate.js works and Vite builds clean.
-# Keeps `master` always deployable.
+# Keeps `main` always deployable.
 
 name: CI — Lint & Build Check
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   validate:
@@ -40,7 +40,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_BASE_PATH: /multisite-platform/   # matches vite.config.js default
+          VITE_BASE_PATH: /
 
       - name: Check dist output
         run: |

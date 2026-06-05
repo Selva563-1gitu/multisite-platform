@@ -2,43 +2,45 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-// GITHUB PAGES: set base to your repo name
-// e.g. if your repo is github.com/yourname/my-platform → base: '/my-platform/'
-// For local dev, base: '/' works fine — CI overrides this via env var
-const base = process.env.VITE_BASE_PATH || '/multisite-platform/'
+/**
+ * BASE PATH CONFIGURATION
+ * ────────────────────────────────────────────────────────
+ * Your GitHub Pages URL is:
+ *   https://selva563-1gitu.github.io/multisite-platform/
+ *
+ * So base MUST be '/multisite-platform/'
+ *
+ * Rule: base = '/' + <your-repo-name> + '/'
+ *
+ * For local dev: Vite still works fine with a sub-path base.
+ * Run `npm run dev` and navigate to:
+ *   http://localhost:5173/multisite-platform/
+ */
+const base = '/multisite-platform/'
 
 export default defineConfig({
   plugins: [react()],
   base,
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@':          resolve(__dirname, 'src'),
       '@generated': resolve(__dirname, 'generated'),
-      '@apps': resolve(__dirname, 'apps'),
+      '@apps':      resolve(__dirname, 'apps'),
     },
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,  // disable sourcemaps in prod — reduces deploy size
     rollupOptions: {
-      // Each app chunk is split automatically via React.lazy()
-      // Vite handles code-splitting natively with dynamic imports
       output: {
         manualChunks(id) {
-          // Vendor chunk for node_modules
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
-          // Per-app chunks: apps/network-dashboard/... → chunk: app-network-dashboard
+          if (id.includes('node_modules')) return 'vendor'
           const appsMatch = id.match(/\/apps\/([^/]+)\//)
-          if (appsMatch) {
-            return `app-${appsMatch[1]}`
-          }
+          if (appsMatch) return `app-${appsMatch[1]}`
         },
       },
     },
   },
-  // Optimize deps so Vite doesn't re-bundle React every HMR
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },

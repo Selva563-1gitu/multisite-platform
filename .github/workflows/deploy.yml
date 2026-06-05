@@ -2,34 +2,17 @@
 # ─────────────────────────────────────────────────────────────
 # CI/CD PIPELINE — Multi-Site DevPortal
 #
-# WHAT THIS DOES:
-#   On every push to `master`:
-#   1. Installs Node deps
-#   2. Runs scripts/generate.js (auto-discovers apps → /generated/)
-#   3. Builds with Vite (code-splits each app into its own chunk)
-#   4. Deploys /dist to the `gh-pages` branch
-#
-# SETUP STEPS (one-time):
-#   1. Go to your repo Settings → Pages
-#   2. Set Source: "Deploy from a branch"
-#   3. Set Branch: gh-pages / (root)
-#   4. Set VITE_BASE_PATH secret (repo name, e.g. /my-platform/)
-#      Settings → Secrets and variables → Actions → New repository secret
-#
-# RESULT:
-#   https://<username>.github.io/<repo-name>/#/
+# Base path is hardcoded in vite.config.js as '/multisite-platform/'
+# No secrets needed for deployment.
 # ─────────────────────────────────────────────────────────────
 
 name: Build & Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - master
-  # Allow manual trigger from GitHub UI
+    branches: [main]
   workflow_dispatch:
 
-# Only one deployment runs at a time
 concurrency:
   group: pages-deploy
   cancel-in-progress: true
@@ -38,79 +21,49 @@ jobs:
   build-and-deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write   # needed to push to gh-pages branch
+      contents: write
 
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history lets gh-pages keep its branch
+          fetch-depth: 0
 
-      # ── 2. Setup Node ────────────────────────────────────────
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # ── 3. Install dependencies ───────────────────────────────
       - name: Install dependencies
         run: npm ci
 
-      # ── 4. Auto-generate routes / navigation ─────────────────
-      # This is the KEY step: scans /apps/, reads metadata.json files,
-      # and writes /generated/{registry,routes,navigation}.js
-      # If you add a new app folder before pushing, it's automatically included.
       - name: Generate app registry
         run: node scripts/generate.js
 
-      # ── 5. Vite build ────────────────────────────────────────
-      # VITE_BASE_PATH is a repo secret set to e.g. /my-platform/
-      # It's injected at build time so all asset paths are correct.
       - name: Build with Vite
-        run: npm run build -- --base="${{ secrets.VITE_BASE_PATH || '/' }}"
+        run: npm run build
         env:
-          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH }}
           NODE_ENV: production
 
-      # ── 6. Copy 404.html (BrowserRouter fallback) ────────────
-      # Even with HashRouter, 404.html is a safety net.
-      # If someone accidentally shares a direct URL, this catches it.
       - name: Add 404 fallback
         run: cp dist/index.html dist/404.html
 
-      # ── 7. Add .nojekyll ─────────────────────────────────────
-      # Prevents GitHub Pages' Jekyll processor from ignoring
-      # folders that start with underscore (like _assets).
       - name: Disable Jekyll
         run: touch dist/.nojekyll
 
-      # ── 8. Deploy to gh-pages ────────────────────────────────
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          # Keeps previous deployment history for rollback
           keep_files: false
-          # Commit message includes SHA for traceability
-          commit_message: "deploy: ${{ github.sha }} — ${{ github.event.head_commit.message }}"
+          commit_message: "deploy: ${{ github.sha }}"
 
-      # ── 9. Post deployment summary ───────────────────────────
       - name: Deployment summary
         run: |
-          echo "## ✅ Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** https://selva563-1gitu.github.io/multisite-platform/#/" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Apps discovered:**" >> $GITHUB_STEP_SUMMARY
-          ls apps/ | while read dir; do
-            if [ -f "apps/$dir/metadata.json" ]; then
-              name=$(node -e "console.log(require('./apps/$dir/metadata.json').name)")
-              echo "- ✓ $name (\`$dir\`)" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
