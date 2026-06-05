@@ -40,7 +40,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_BASE_PATH: /
+          VITE_BASE_PATH: /multisite-platform/
 
       - name: Check dist output
         run: |
