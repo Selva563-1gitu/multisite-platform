@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T11:58:06.293Z
+// Generated: 2026-06-05T12:10:28.572Z
 export const appManifest = [
   {
     "folderName": "abcd-todolist",
@@ -18,7 +18,7 @@ export const appManifest = [
     "htmlPath": null,
     "url": null,
     "iframeOptions": {},
-    "lastModified": 1780660528807.997
+    "lastModified": 1780661152778.9949
   },
   {
     "folderName": "html-calculator",
@@ -55,7 +55,7 @@ export const appManifest = [
     "htmlPath": "/apps/demo-greetings/index.html",
     "url": null,
     "iframeOptions": {},
-    "lastModified": 1780660528812.997
+    "lastModified": 1780661152783.9949
   },
   {
     "folderName": "portfolio",
@@ -91,7 +91,7 @@ export const appManifest = [
     "htmlPath": "/apps/ptu-website/index.html",
     "url": null,
     "iframeOptions": {},
-    "lastModified": 1780660528817.997
+    "lastModified": 1780661152788.9949
   }
 ]
 export default appManifest
