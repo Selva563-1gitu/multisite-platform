@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T21:26:34.834Z
+// Generated: 2026-06-05T21:59:18.716Z
 
 import appRegistry from './registry.js'
 
@@ -18,7 +18,7 @@ export const routeConfig = [
     name:      'A Demo - Greetings',
     type:      'html',
     component: null,
-    htmlPath:  '/apps/greetings/index.html',
+    htmlPath:  'multisite-platform/apps/greetings/index.html',
     url:       null,
     iframeOptions: {},
   },
@@ -38,7 +38,7 @@ export const routeConfig = [
     name:      'Calculator',
     type:      'html',
     component: null,
-    htmlPath:  '/apps/html-calculator/index.html',
+    htmlPath:  'multisite-platform/apps/html-calculator/index.html',
     url:       null,
     iframeOptions: {},
   },
@@ -58,7 +58,7 @@ export const routeConfig = [
     name:      'PTU Website',
     type:      'html',
     component: null,
-    htmlPath:  '/apps/ptu-website/index.html',
+    htmlPath:  'multisite-platform/apps/ptu-website/index.html',
     url:       null,
     iframeOptions: {},
   },

@@ -134,7 +134,7 @@ function discoverApps() {
       order:       typeof meta.order === 'number' ? meta.order : 999,
       status:      meta.status || 'stable',
       // html type: path to iframe src (relative to site root)
-      htmlPath:    type === 'html' ? `/apps/${entry.name}/index.html` : null,
+      htmlPath:    type === 'html' ? `/multisite-platform/apps/${entry.name}/index.html` : null,
       // url type: external URL
       url:         type === 'url' ? meta.url : null,
       // whether to show toolbar controls in the iframe shell

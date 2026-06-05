@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually
-// Generated: 2026-06-05T21:26:34.835Z
+// Generated: 2026-06-05T21:59:18.717Z
 export const appManifest = [
   {
     "folderName": "greetings",
@@ -14,7 +14,7 @@ export const appManifest = [
     "color": "amber",
     "order": 4,
     "status": "stable",
-    "htmlPath": "/apps/greetings/index.html",
+    "htmlPath": "multisite-platform/apps/greetings/index.html",
     "url": null,
     "iframeOptions": {},
     "lastModified": 1780690857404.9873
@@ -53,7 +53,7 @@ export const appManifest = [
     "color": "amber",
     "order": 4,
     "status": "stable",
-    "htmlPath": "/apps/html-calculator/index.html",
+    "htmlPath": "multisite-platform/apps/html-calculator/index.html",
     "url": null,
     "iframeOptions": {},
     "lastModified": 1780237697000
@@ -89,7 +89,7 @@ export const appManifest = [
     "color": "rose",
     "order": 4,
     "status": "stable",
-    "htmlPath": "/apps/ptu-website/index.html",
+    "htmlPath": "multisite-platform/apps/ptu-website/index.html",
     "url": null,
     "iframeOptions": {},
     "lastModified": 1780690857463.9873
